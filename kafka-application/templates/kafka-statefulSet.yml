@@ -11,7 +11,7 @@ metadata:
     
 spec:
   podManagementPolicy: OrderedReady
-  replicas: 3
+  replicas: 5
   serviceName: kafka-headless-svc
   selector:
     matchLabels:
