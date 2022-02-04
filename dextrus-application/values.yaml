@@ -8,8 +8,8 @@ namespace: ""
 
 s3:
   bucket_name: "dextrus-test28092021"
-  access_key: "AKIASJLZFCYLLMLRSROS"
-  secret_key: "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"
+  access_key: ""
+  secret_key: ""
   region: "ap-south-1"
 
 rds_end_point: "terraform-20210928143533128300000001.ciwmij2ca5ul.ap-south-1.rds.amazonaws.com" 
