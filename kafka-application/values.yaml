@@ -3,7 +3,7 @@
 ## Declare variables to be passed into your templates.
 
 name: "test"
-namespace: "kafka-test"
+namespace: "kafka"
 
 
 zookeeper:
