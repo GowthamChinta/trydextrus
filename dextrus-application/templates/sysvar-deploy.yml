@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}-sysvar-deploy
+  namespace: {{.Values.namespace | default "default" }}
+  labels:
+    app: {{ .Values.name }}-sysvar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-sysvar
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-sysvar
+    spec:
+      containers:
+      - name: {{ .Values.name }}-sysvar
+        image: 157557265942.dkr.ecr.ap-south-1.amazonaws.com/systemvariables:cluster-0.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        volumeMounts:
+          - name: dextrus-config-maps
+            mountPath: "/home/systemvariables/resources"
+            readOnly: true
+
+      volumes:
+        - name: dextrus-config-maps
+          projected:
+            sources:
+            - configMap:
+                name: {{ .Values.name }}-sysvar-appdev-cm
+            - configMap:
+                name: hive-site-cm
+            - configMap:
+                name: metastore-site-cm
+            - configMap:
+                name: application-cm
+

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.name }}-dextrusprod-deploy
+  labels:
+    app: {{ .Values.name }}-dextrusprod
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.name }}-dextrusprod
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.name }}-dextrusprod
+    spec:
+      volumes:
+        - name: efs-pvc
+          persistentVolumeClaim:
+            claimName: efs
+        - name: dextrus-config-maps
+          projected:
+            sources:
+            - configMap:
+                name: hive-site-cm
+            - configMap:
+                name: metastore-site-cm
+            - configMap:
+                name: application-cm
+            - configMap:
+                name: {{ .Values.name }}-dextrusprod-appdev-cm             
+      containers:
+      - name: {{ .Values.name }}-dextrusprod
+        image: 157557265942.dkr.ecr.ap-south-1.amazonaws.com/dextrusprod:cluster-0.3
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8086
+        volumeMounts:
+          - name: efs-pvc
+            mountPath: "/home/ubuntu"
+          - name: dextrus-config-maps
+            mountPath: "/home/dextrusprod/resources"
+            readOnly: true
+

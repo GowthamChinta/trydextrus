@@ -1,0 +1,16 @@
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: zookeeper-pdb
+  namespace: {{ .Values.namespace | default "default" }}
+  labels:
+    app: zookeeper
+    #  annotations:
+    #    "helm.sh/hook-weight": "1"
+
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: zookeeper

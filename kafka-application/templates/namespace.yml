@@ -1,0 +1,13 @@
+{{- if .Values.namespace }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  creationTimestamp: null
+  name: {{ .Values.namespace }}
+  #  annotations:
+  #    "helm.sh/hook": "pre-install"
+  #    "helm.sh/hook-weight": "-100"
+spec: {}
+status: {}
+{{- else }}
+{{- end }}

@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.name }}-sysvar-svc
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  type: {{ .Values.systemVariable.service.type | default "ClusterIP" }}
+  selector:
+    app: {{ .Values.name }}-sysvar
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
