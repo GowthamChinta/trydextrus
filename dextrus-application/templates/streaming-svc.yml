@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name:  {{ .Values.name }}-streaming-svc
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  type: {{ .Values.streaming.service.type | default "ClusterIP" }}
+  selector:
+    app: {{ .Values.name }}-streaming
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8081

@@ -1,0 +1,136 @@
+apiVersion: v1
+data:
+  application-dev.yml: |
+    logging:
+      level:
+        org.springframework.web: OFF
+
+    server:
+      port: 8080
+
+    spring:
+      h2:
+        console:
+          path: /h2-console
+          settings:
+            trace: false
+            web-allow-others: false
+
+      application:
+        name: Dextrus-Web-Applicaiton
+
+      datasource:
+        driver: com.mysql.jdbc.Driver
+        url: jdbc:mysql://{{ .Values.rds_endpoint }}:3306/dextrus_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false
+        username: admin
+        password: changeme
+
+      jpa:
+        show-sql: true
+        use_sql_comments: true
+
+        properties:
+          hibernate:
+            dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+            show-sql: true
+            use_sql_comments: true
+            format_sql: true
+
+        hibernate:
+          ddl-auto: update
+
+      servlet:
+        multipart:
+          max-file-size: 10GB
+          max-request-size: 10GB
+
+
+    jwt:
+      secret: rightdata
+      validity: 2 * 60 * 1000
+
+    deployment:
+      mode: {{ .Values.deploymentMode }}
+
+    service:
+      system-variables: {{ .Values.variable_endpoint }}/system-variables
+      user-variables: {{ .Values.variable_endpoint }}/user-variables
+
+    confluent:
+      ip:
+        connect: connect-svc
+        restProxy: rest-svc
+        bootstrap: kafka-svc
+      port:
+        connect: 8083
+        restProxy: 8082
+        bootstrap: 9092
+
+    spark:
+      persistence:
+        location: s3a://{{ .Values.dextrusweb.bucket_name }}/spark-warehouse
+      warehouse:
+        dir: s3a://{{ .Values.dextrusweb.bucket_name }}/hive
+      s3:
+        accessKey: {{ .Values.s3.access_key }}
+        secretKey: {{ .Values.s3.secret_key }}
+        region: {{ .Values.s3.region }}
+        bucket: {{ .Values.dextrusweb.bucket_name }}
+        endPoint: s3.{{ .Values.s3.region }}.amazonaws.com
+      driver:
+        host: {{ .Values.name }}-dextrusweb-headless-service
+        port: 44103
+        memory: 1g
+        memoryOverhead: 512
+      jars: s3a://{{ .Values.dextrusweb.bucket_name }}/mssql-jdbc-7.0.0.jre8.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/redshift-jdbc42-1.2.1.1001.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/snowflake-jdbc-3.12.15.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/mysql-connector-java-8.0.20.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/cdata.jdbc.salesforce.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/ojdbc7.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/cdata.jdbc.saphana.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/spark-snowflake_2.12-2.8.3-spark_3.0.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/azure-sqldb-spark-1.0.2.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/delta-core_2.12-0.7.0.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/spark-sql_2.12-3.0.1.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/spark-tags_2.12-3.0.1.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/spark-token-provider-kafka-0-10_2.12-3.0.1.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/kafka-clients-2.4.1.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/commons-pool2-2.6.2.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/spark-sql-kafka-0-10_2.12-3.0.1.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/SparkDependentsStreaming/mssql-jdbc-8.4.1.jre8.jar
+      master: {{ .Values.kubernetes.master }}
+      blockManager:
+        port: 61023
+      port:
+        maxRetries: 20
+      executor:
+        cores: 1
+        memory: 2g
+        memoryOverhead: 1024
+      dynamicAllocation:
+        enabled: true
+        shuffleTracking:
+          enabled: true
+        executorIdleTimeout: 60s
+        schedulerBacklogTimeout: 60s
+        minExecutors: 2
+        maxExecutors: 20
+      kubernetes:
+        container:
+          image: public.ecr.aws/n9g8r8n8/rightdata/spark:v3.0.1-hive-s3
+        executor:
+          deleteOnTermination: false
+
+    csv:
+      temp_location: s3a://{{ .Values.dextrusweb.bucket_name }}/dextrus_temp/temp/csv/
+
+    delta:
+      warehouse:
+        dir: s3a://{{ .Values.dextrusweb.bucket_name }}/DELTA_WAREHOUSE
+
+    frontend_url: {{ .Values.dextrusweb.data.applicationDev.frontendUrl }}
+
+    img_param:
+      dpDir: /home/ubuntu/dextrusMedia/profile/dp/
+      defaultDpDir: /home/ubuntu/dextrusMedia/profile/default/
+      iconDir: /home/ubuntu/dextrusMedia/profile/icon/
+      iconHeight: 100
+      iconWidth: 100
+      iconExtension: png
+      iconQualityFraction: 0.5
+
+    logi:
+      base_url: {{ .Values.dextrusweb.data.applicationDev.logi.baseUrl }}
+      username: {{ .Values.dextrusweb.data.applicationDev.logi.username }}
+      password: {{ .Values.dextrusweb.data.applicationDev.logi.password }}
+      token_validity: 12000
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: {{ .Values.name }}-dextrusweb-appdev-cm
+  namespace: {{ .Values.namespace | default "default" }}
