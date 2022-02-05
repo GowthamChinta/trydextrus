@@ -8,4 +8,4 @@ kind: ConfigMap
 metadata:
   name: application-cm
   namespace: {{ .Values.namespace | default "default" }}
-  resourceVersion: "42573296"
+
