@@ -1,0 +1,136 @@
+{{- if eq .Values.installKafka "yes" }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zookeeper
+  namespace: {{ .Values.namespace | default "default" }}
+  labels:
+    app: zookeeper
+    #  annotations:
+    #    "helm.sh/hook": "pre-install"
+    #    "helm.sh/hook-weight": "-15"
+spec:
+  podManagementPolicy: "OrderedReady"
+  updateStrategy:
+    type: RollingUpdate
+  replicas: 3
+  selector:
+    matchLabels:
+      app: zookeeper
+  serviceName: zookeeper-headless-svc
+  template:
+    metadata:
+      name: zookeeper
+      labels:
+        app: zookeeper
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - zookeeper
+              topologyKey: kubernetes.io/hostname
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: eks.amazonaws.com/nodegroup
+                    operator: In
+                    values:
+                      - kafka
+      containers:
+        - env:
+            - name: KAFKA_HEAP_OPTS
+              value: "-Xms600M -Xmx600M -Dzookeeper.4lw.commands.whitelist=stat,mntr,ruok"
+            - name: ZOOKEEPER_TICK_TIME
+              value: "3000"
+            - name: ZOOKEEPER_SYNC_LIMIT
+              value: "2"
+            - name: ZOOKEEPER_INIT_LIMIT
+              value: "10"
+            - name: ZOOKEEPER_MAX_CLIENT_CNXNS
+              value: "60"
+            - name: ZOOKEEPER_CLIENT_PORT
+              value: "2181"
+            - name: ZOOKEEPER_AUTOPURGE_SNAP_RETAIN_COUNT
+              value: "3"
+            - name: ZOOKEEPER_AUTOPURGE_PURGE_INTERVAL
+              value: "24"
+            {{- if .Values.namespace }}
+            - name: ZOOKEEPER_SERVERS
+              value: "zookeeper-0.zookeeper-headless-svc.{{ .Values.namespace }}:2888:3888;zookeeper-1.zookeeper-headless-svc.{{ .Values.namespace }}:2888:3888;zookeeper-2.zookeeper-headless-svc.{{ .Values.namespace }}:2888:3888"
+            {{- else }}
+            - name: ZOOKEEPER_SERVERS
+              value: "zookeeper-0.zookeeper-headless-svc.default:2888:3888;zookeeper-1.zookeeper-headless-svc.default:2888:3888;zookeeper-2.zookeeper-headless-svc.default:2888:3888"
+            {{- end }}
+            - name: KAFKA_JMX_PORT
+              value: "39999"
+            - name: ZOOKEEPER_SERVER_ID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          resources:
+            requests:
+              cpu: 1
+              memory: 1.2Gi
+            limits:
+              cpu: 1
+              memory: 1.2Gi
+          ports:
+            - containerPort: 2888
+              name: server
+            - containerPort: 2181
+              name: client
+            - containerPort: 3888
+              name: leader-election
+          command:
+            - "/bin/bash"
+            - "-c"
+            - |
+              ZK_FIX_HOST_REGEX="s/${HOSTNAME}\.[^:]*:/0.0.0.0:/g"
+              ZOOKEEPER_SERVER_ID=$((${HOSTNAME##*-}+1)) \
+              ZOOKEEPER_SERVERS=`echo $ZOOKEEPER_SERVERS | sed -e "$ZK_FIX_HOST_REGEX"` \
+              /etc/confluent/docker/run
+#          livenessProbe:
+#            exec:
+#              command:
+#                - "/bin/bash"
+#                - "-c"
+#                - echo stat | nc 0.0.0.0 2181 | grep -i "leader\|follower"
+          image: confluentinc/cp-zookeeper:5.5.0
+          name: zookeeper
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: datadir
+              mountPath: /var/lib/zookeeper/data
+            - name: datalogdir
+              mountPath: /var/lib/zookeeper/log
+  volumeClaimTemplates:
+    - metadata:
+        name: datadir
+        labels:
+          app: zookeeper
+      spec:
+        storageClassName: gp2
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.zookeeper.datadir.resources.storageSize }}
+    - metadata:
+        name: datalogdir
+        labels:
+          app: zookeeper
+      spec:
+        storageClassName: gp2
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.zookeeper.datalogdir.resources.storageSize }}
+{{- else }}
+{{- end }}

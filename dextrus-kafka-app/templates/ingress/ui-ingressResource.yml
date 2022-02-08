@@ -1,0 +1,47 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/cors-allow-headers: Content-Type, Authorization, Logi_Token 
+    nginx.ingress.kubernetes.io/cors-allow-methods: POST, GET, OPTIONS
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-expose-headers: X-Custom-Header
+    nginx.ingress.kubernetes.io/cors-max-age: "86400"
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    {{- if eq (.Values.ingressResource.sslEnabled | toString) "yes" }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    {{- else }}
+    {{- end }}
+    nginx.ingress.kubernetes.io/app-root: /Dextrus
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  generation: 2
+  name: ui-ingress-resource
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+{{- if .Values.ingressResource.domainName }}
+  {{- if eq (.Values.ingressResource.sshEnabled | toString) "yes" }}      
+  tls:
+    - hosts:
+      - {{ .Values.ingressResource.domainName }}
+      {{- if .Values.ingressResource.existingSecretName }}  
+      secretName: {{ .Values.ingressResource.existingSecretName }}
+      {{- else }}
+      {{- end }}
+  {{- else }}
+  {{- end }}
+{{- else }}
+{{- end }}
+  rules:
+  - http:
+      paths:
+      - backend:
+          service:
+            name: {{ .Values.name }}-dextrusui-svc
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+    {{- if .Values.ingressResource.domainName }}
+    host: {{ .Values.ingressResource.domainName }}
+    {{- else }}
+    {{- end }} 

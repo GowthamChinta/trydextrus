@@ -1,0 +1,14 @@
+{{- if eq .Values.ingressResource.createSecret "yes" }}
+
+apiVersion: v1
+data:
+  tls.crt:
+  tls.key:
+kind: Secret
+metadata:
+  name: {{ .Values.name }}-cert
+  namespace: {{ .Values.namespace | default "default" }}
+type: kubernetes.io/tls
+
+{{- else }}
+{{- end }}

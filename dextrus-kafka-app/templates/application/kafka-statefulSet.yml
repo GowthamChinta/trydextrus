@@ -1,0 +1,119 @@
+{{- if eq .Values.installKafka "yes" }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka
+  namespace: {{ .Values.namespace | default "default" }}
+  labels:
+    app: kafka
+    #  annotations:kafka-statefulSet.yml
+    #    "helm.sh/hook": "pre-install"
+    #    "helm.sh/hook-weight": "2"
+    
+spec:
+  podManagementPolicy: OrderedReady
+  replicas: 4
+  serviceName: kafka-headless-svc
+  selector:
+    matchLabels:
+      app: kafka
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - kafka
+              topologyKey: kubernetes.io/hostname
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: eks.amazonaws.com/nodegroup
+                    operator: In
+                    values:
+                      - kafka
+      initContainers:
+        - name: init-zookeeper-0
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup zookeeper-0.zookeeper-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for zookeeper; sleep 2; done"]
+        - name: init-zookeeper-1
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup zookeeper-1.zookeeper-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for zookeeper; sleep 2; done"]
+        - name: init-zookeeper-2
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup zookeeper-2.zookeeper-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for zookeeper; sleep 2; done"]
+        - name: init-sleep
+          image: busybox:1.28
+          command: ['sh', '-c', "sleep 120"]
+
+      containers:
+
+        - name: kafka
+          env:
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: KAFKA_HEAP_OPTS
+              value: "-Xms512M -Xmx512M"
+            - name: KAFKA_ZOOKEEPER_CONNECT
+              value: "zookeeper-0.zookeeper-headless-svc:2181"
+            - name: KAFKA_LOG_DIRS
+              value: /opt/kafka/data
+            - name: KAFKA_JMX_PORT
+              value: "39999"
+            - name: KAFKA_AUTO_CREATE_TOPICS_ENABLE
+              value: "true"
+          resources: {}
+          command:
+            - sh
+            - -exc
+            - |
+              export KAFKA_BROKER_ID=${HOSTNAME##*-} && \
+              export KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://${POD_NAME}.kafka-headless-svc:9092 && \
+              exec /etc/confluent/docker/run
+          ports:
+            - containerPort: 9092
+              name: broker
+          image: confluentinc/cp-kafka:5.5.0
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: datadir
+              mountPath: /opt/kafka/
+  volumeClaimTemplates:
+    - metadata:
+        name: datadir
+        labels:
+          app: kafka
+      spec:
+        storageClassName: gp2
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: {{ .Values.kafka.resources.storageSize }}
+
+{{- else }}
+{{- end }}

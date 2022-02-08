@@ -1,0 +1,109 @@
+{{- if eq .Values.installKafka "yes" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: connect-deploy
+  namespace: {{ .Values.namespace | default "default" }}
+  labels:
+    app: connect
+    #  annotations:
+    #    "helm.sh/hook": "pre-install"
+    #    "helm.sh/hook-weight": "100"
+    
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: connect
+  template:
+    metadata:
+      labels:
+        app: connect
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: eks.amazonaws.com/nodegroup
+                    operator: In
+                    values:
+                      - kafka
+      initContainers:                  
+        - name: init-kafka-0
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup kafka-0.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
+        - name: init-kafka-1
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup kafka-1.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
+        - name: init-kafka-2
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup kafka-2.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
+        - name: init-kafka-3
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup kafka-3.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]      
+      containers:
+        - image: confluentinc/cp-kafka-connect:5.5.0
+          name: connect
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: connect
+              containerPort: 8083
+          env:
+            - name: CONNECT_REST_ADVERTISED_HOST_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: CONNECT_BOOTSTRAP_SERVERS
+              value: "kafka-svc:9092"
+            - name: CONNECT_GROUP_ID
+              value: group-connect
+            - name: CONNECT_CONFIG_STORAGE_TOPIC
+              value: connect-config
+            - name: CONNECT_OFFSET_STORAGE_TOPIC
+              value: connect-offset
+            - name: CONNECT_STATUS_STORAGE_TOPIC
+              value: connect-status
+            - name: CONNECT_KEY_CONVERTER
+              value: org.apache.kafka.connect.json.JsonConverter
+            - name: CONNECT_VALUE_CONVERTER
+              value: org.apache.kafka.connect.json.JsonConverter
+            - name: CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL
+              value: schema-registry-svc:8082
+            - name: CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL
+              value: schema-registry-svc:8082
+            - name: CONNECT_PLUGIN.PATH
+              value: "/usr/share/java,/usr/share/confluent-hub-components"
+            - name: CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE
+              value: "false"
+            - name: CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE
+              value: "false"
+            - name: CONNECT_INTERNAL_KEY_CONVERTER
+              value: org.apache.kafka.connect.json.JsonConverter
+            - name: CONNECT_INERNAL_VALUE_CONVERTER
+              value: org.apache.kafka.connect.json.JsonConverter
+            - name: KAFKA_HEAP_OPTS
+              value: "-Xms600M -Xmx600M"
+          command:
+            - /bin/bash
+            - -c
+            - |
+              wget https://repo1.maven.org/maven2/io/debezium/debezium-connector-mysql/0.10.0.Final/debezium-connector-mysql-0.10.0.Final-plugin.tar.gz
+              wget https://repo1.maven.org/maven2/io/debezium/debezium-connector-sqlserver/0.10.0.Final/debezium-connector-sqlserver-0.10.0.Final-plugin.tar.gz
+              #wget https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/9.4.0.jre16/mssql-jdbc-9.4.0.jre16.jar -P /usr/share/java
+              #wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.26/mysql-connector-java-8.0.26.jar -P /usr/share/java/kafka-connect-jdbc/
+              #wget https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/9.4.0.jre8/mssql-jdbc-9.4.0.jre8.jar -P /usr/share/java/kafka-connect-jdbc/
+              tar xvf debezium-connector-mysql-0.10.0.Final-plugin.tar.gz -C /usr/share/java
+              tar xvf debezium-connector-sqlserver-0.10.0.Final-plugin.tar.gz -C /usr/share/java
+              wget https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.26/mysql-connector-java-8.0.26.jar
+              wget https://repo1.maven.org/maven2/com/microsoft/sqlserver/mssql-jdbc/9.4.0.jre8/mssql-jdbc-9.4.0.jre8.jar
+              cp mysql-connector-java-8.0.26.jar /usr/share/java/kafka-connect-jdbc
+              cp mssql-jdbc-9.4.0.jre8.jar /usr/share/java/kafka-connect-jdbc
+            
+              rm -rf *.tar.*
+              /etc/confluent/docker/run &
+              $CUSTOM_SCRIPT_PATH
+              sleep infinity
+
+{{- else }}
+{{- end }}
