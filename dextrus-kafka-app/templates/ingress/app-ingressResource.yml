@@ -26,7 +26,7 @@ spec:
       {{- if .Values.ingressResource.existingSecretName }}
       secretName: {{ .Values.ingressResource.existingSecretName }}
       {{- else if eq (.Values.ingressResource.createSecret | toString) "yes" }}
-      secretName: {{ .Values.name }}-secret
+      secretName: {{ .Values.name }}-cert
       {{- else }}      
       {{- end }}
   {{- end }}        
