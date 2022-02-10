@@ -11,11 +11,9 @@ metadata:
     nginx.ingress.kubernetes.io/enable-cors: "true"
     {{- if eq (.Values.ingressResource.sslEnabled | toString) "yes" }}
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
-    {{- else }}
     {{- end }}
     nginx.ingress.kubernetes.io/app-root: /Dextrus
     nginx.ingress.kubernetes.io/rewrite-target: /
-  generation: 2
   name: ui-ingress-resource
   namespace: {{ .Values.namespace | default "default" }}
 spec:
@@ -26,11 +24,8 @@ spec:
       - {{ .Values.ingressResource.domainName }}
       {{- if .Values.ingressResource.existingSecretName }}  
       secretName: {{ .Values.ingressResource.existingSecretName }}
-      {{- else }}
       {{- end }}
-  {{- else }}
   {{- end }}
-{{- else }}
 {{- end }}
   rules:
   - http:
@@ -44,6 +39,5 @@ spec:
         pathType: Prefix
     {{- if .Values.ingressResource.domainName }}
     host: {{ .Values.ingressResource.domainName }}
-    {{- else }}
     {{- end }} 
 {{- end }}
