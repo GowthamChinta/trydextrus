@@ -1,8 +1,8 @@
-{{- if eq .Values.ingressResource.createSecret "yes" }}
+{{- if eq ( .Values.ingressResource.createSecret | toString ) "yes" }}
 
 apiVersion: v1
 data:
-  {{- if eq .Values.ingressResource.throughFile "yes" }}
+  {{- if eq ( .Values.ingressResource.throughFile | toString ) "yes" }}
   {{- $root := . -}}
   {{- range $path, $bytes := .Files.Glob "secrets/cachain.crt" }}
   tls.crt: '{{ $root.Files.Get $path | b64enc }}'
