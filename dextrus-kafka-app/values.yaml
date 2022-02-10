@@ -126,7 +126,18 @@ ingressResource:
   # These parameters are still under testing
   createSecret: "no" #Only Enter "yes" if you want to create a secret as a part of dextrus-helm chart. 
   throughFile: "no" #save cachain.crt and private.key in secrets folder under helm chart
-  caCRT: "" #provide Base64 encoded certificate of the domain
+  
+  #steps to create cachainCRT 
+  # ca.crt ---- is the provided cert for domain (assumption)
+  # root.crt ---- is the root cert (assumption)
+  # cat ca.crt > cachain.crt (cachain.crt is an empty file)
+  # cat root.crt >> cachain.crt (here cachain.crt should already contain ca.crt data)
+  # cat cachain.crt | base64 ----- provide the output to cachainCRT beow.
+  cachainCRT: "" #provide Base64 encoded certificate of the certificate chain ( This should include both cert file and root file provided by public domain))
+
+  # steps to create base64 privateKey
+  # private.key ----- is the provided private key from domain (assumption)
+  # cat private.key | base64 ------------- provide the output to privateKey below
   privateKey: "" #provide Base64 encoded certificate of the domain
-  rootCRT: "" #provide Base64 encoded certificate of Certificate Authority / Root Cert
+
    
