@@ -26,6 +26,9 @@ spec:
       - {{ .Values.ingressResource.domainName }}
       {{- if .Values.ingressResource.existingSecretName }}  
       secretName: {{ .Values.ingressResource.existingSecretName }}
+      {{- else if eq (.Values.ingressResource.createSecret | toString) "yes" }}
+      secretName: {{ .Values.name }}-secret
+      {{- else }}
       {{- end }}
   {{- end }}
 {{- end }}
