@@ -51,7 +51,7 @@ data:
           show-sql: true
       datasource:
         driver: com.mysql.jdbc.Driver
-        url: jdbc:mysql://{{ .Values.rds_endpoint }}:3306/dextrus_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false
+        url: jdbc:mysql://{{ .Values.rds_end_point }}:3306/dextrus_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false
         username: admin
         password: changeme
       server:
