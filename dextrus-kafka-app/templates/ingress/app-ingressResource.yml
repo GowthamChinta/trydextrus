@@ -19,7 +19,7 @@ metadata:
   namespace: {{ .Values.namespace | default "default" }}
 spec:
 {{- if .Values.ingressResource.domainName }}
-  {{- if eq (.Values.ingressResource.sshEnabled | toString) "yes" }}
+  {{- if eq (.Values.ingressResource.sslEnabled | toString) "yes" }}
   tls:
     - hosts:
       - {{ .Values.ingressResource.domainName }}
