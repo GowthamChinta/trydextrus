@@ -12,7 +12,7 @@ data:
   tls.key: '{{ $root.Files.Get $path | b64enc }}'
   {{- end }}
   {{- else }}
-  tls.crt: {{ .Values.ingressResource.chainCRT }}
+  tls.crt: {{ .Values.ingressResource.cachainCRT }}
   tls.key: {{ .Values.ingressResource.privateKey }}
   {{- end }}
 kind: Secret
