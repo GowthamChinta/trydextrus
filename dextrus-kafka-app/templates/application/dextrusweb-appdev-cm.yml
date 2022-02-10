@@ -21,7 +21,7 @@ data:
 
       datasource:
         driver: com.mysql.jdbc.Driver
-        url: jdbc:mysql://{{ .Values.rds_endpoint }}:3306/dextrus_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false
+        url: jdbc:mysql://{{ .Values.rds_end_point }}:3306/dextrus_db?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useSSL=false
         username: admin
         password: changeme
 
@@ -68,22 +68,22 @@ data:
 
     spark:
       persistence:
-        location: s3a://{{ .Values.dextrusweb.bucket_name }}/spark-warehouse
+        location: s3a://{{ .Values.s3.bucket_name }}/spark-warehouse
       warehouse:
-        dir: s3a://{{ .Values.dextrusweb.bucket_name }}/hive
+        dir: s3a://{{ .Values.s3.bucket_name }}/hive
       s3:
         accessKey: {{ .Values.s3.access_key }}
         secretKey: {{ .Values.s3.secret_key }}
         region: {{ .Values.s3.region }}
-        bucket: {{ .Values.dextrusweb.bucket_name }}
+        bucket: {{ .Values.s3.bucket_name }}
         endPoint: s3.{{ .Values.s3.region }}.amazonaws.com
       driver:
         host: {{ .Values.name }}-dextrusweb-headless-service
         port: 44103
         memory: 1g
         memoryOverhead: 512
-      jars: s3a://{{ .Values.dextrusweb.bucket_name }}/mssql-jdbc-7.0.0.jre8.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/redshift-jdbc42-1.2.1.1001.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/snowflake-jdbc-3.12.15.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/mysql-connector-java-8.0.20.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/cdata.jdbc.salesforce.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/ojdbc7.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/cdata.jdbc.saphana.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/spark-snowflake_2.12-2.8.3-spark_3.0.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/azure-sqldb-spark-1.0.2.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/delta-core_2.12-0.7.0.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/spark-sql_2.12-3.0.1.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/spark-tags_2.12-3.0.1.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/spark-token-provider-kafka-0-10_2.12-3.0.1.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/kafka-clients-2.4.1.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/commons-pool2-2.6.2.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/spark-sql-kafka-0-10_2.12-3.0.1.jar,s3a://{{ .Values.dextrusweb.bucket_name }}/SparkDependentsStreaming/mssql-jdbc-8.4.1.jre8.jar
-      master: {{ .Values.kubernetes.master }}
+      jars: s3a://{{ .Values.s3.bucket_name }}/mssql-jdbc-7.0.0.jre8.jar,s3a://{{ .Values.s3.bucket_name }}/redshift-jdbc42-1.2.1.1001.jar,s3a://{{ .Values.s3.bucket_name }}/snowflake-jdbc-3.12.15.jar,s3a://{{ .Values.s3.bucket_name }}/mysql-connector-java-8.0.20.jar,s3a://{{ .Values.s3.bucket_name }}/cdata.jdbc.salesforce.jar,s3a://{{ .Values.s3.bucket_name }}/ojdbc7.jar,s3a://{{ .Values.s3.bucket_name }}/cdata.jdbc.saphana.jar,s3a://{{ .Values.s3.bucket_name }}/spark-snowflake_2.12-2.8.3-spark_3.0.jar,s3a://{{ .Values.s3.bucket_name }}/azure-sqldb-spark-1.0.2.jar,s3a://{{ .Values.s3.bucket_name }}/delta-core_2.12-0.7.0.jar,s3a://{{ .Values.s3.bucket_name }}/spark-sql_2.12-3.0.1.jar,s3a://{{ .Values.s3.bucket_name }}/spark-tags_2.12-3.0.1.jar,s3a://{{ .Values.s3.bucket_name }}/spark-token-provider-kafka-0-10_2.12-3.0.1.jar,s3a://{{ .Values.s3.bucket_name }}/kafka-clients-2.4.1.jar,s3a://{{ .Values.s3.bucket_name }}/commons-pool2-2.6.2.jar,s3a://{{ .Values.s3.bucket_name }}/spark-sql-kafka-0-10_2.12-3.0.1.jar,s3a://{{ .Values.s3.bucket_name }}/SparkDependentsStreaming/mssql-jdbc-8.4.1.jre8.jar
+
       blockManager:
         port: 61023
       port:
@@ -107,11 +107,11 @@ data:
           deleteOnTermination: false
 
     csv:
-      temp_location: s3a://{{ .Values.dextrusweb.bucket_name }}/dextrus_temp/temp/csv/
+      temp_location: s3a://{{ .Values.s3.bucket_name }}/dextrus_temp/temp/csv/
 
     delta:
       warehouse:
-        dir: s3a://{{ .Values.dextrusweb.bucket_name }}/DELTA_WAREHOUSE
+        dir: s3a://{{ .Values.s3.bucket_name }}/DELTA_WAREHOUSE
 
     frontend_url: {{ .Values.dextrusweb.data.applicationDev.frontendUrl }}
 
