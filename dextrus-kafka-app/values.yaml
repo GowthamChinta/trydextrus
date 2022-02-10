@@ -117,7 +117,7 @@ ingressResource:
   # kubectl create secret tls <secretName> --cert=path/to/tls.cert --key=path/to/tls.key
   # check "kubectl create secret tls --help" for more details
   # This certificate should be available in same namespace the application will be deployed. If no namespace is provide above then it can be created in default namespace
-  SecretName: "dextrus-cert" #ssl certs received from public/private domain. needs to be used as a form of secret. secret should contain cert chain(cachain.cer) & private key (private.key)
+  secretName: "dextrus-cert" #ssl certs received from public/private domain. needs to be used as a form of secret. secret should contain cert chain(cachain.cer) & private key (private.key)
 
 
 
