@@ -8,8 +8,8 @@ namespace: "test"
 
 s3:
   bucket_name: "dextrus-test28092021"
-  access_key: ""
-  secret_key: ""
+  access_key: "AKIASJLZFCYLLMLRSROS"
+  secret_key: "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"
   region: "ap-south-1"
 
 rds_end_point: "terraform-20210928143533128300000001.ciwmij2ca5ul.ap-south-1.rds.amazonaws.com"
@@ -104,6 +104,8 @@ ingressController:
 
 ##############################################################
 #
+
+installIngressResource: "yes"  
 
 ingressResource:
   domainName: "trydextrus.com" #Domain name created for the application. Leave empty if DomainName is not used. It can be both public and private domain name.
