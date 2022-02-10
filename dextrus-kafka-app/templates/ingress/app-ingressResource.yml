@@ -9,9 +9,11 @@ metadata:
     nginx.ingress.kubernetes.io/cors-expose-headers: X-Custom-Header
     nginx.ingress.kubernetes.io/cors-max-age: "86400"
     nginx.ingress.kubernetes.io/enable-cors: "true"
+    {{- if .Values.ingressResource.domainName }}
     {{- if eq (.Values.ingressResource.sslEnabled | toString) "yes" }}
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
     {{- end }}   
+    {{- end }}
     nginx.ingress.kubernetes.io/rewrite-target: /$2
   name: app-ingress-resource
   namespace: {{ .Values.namespace | default "default" }}
