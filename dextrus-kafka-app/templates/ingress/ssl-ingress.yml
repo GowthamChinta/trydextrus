@@ -2,8 +2,19 @@
 
 apiVersion: v1
 data:
-  tls.crt:
-  tls.key:
+  {{- if eq .Values.ingressResource.throughFile "yes" }}
+  {{- $root := . -}}
+  {{- range $path, $bytes := .Files.Glob "secrets/cachain.crt" }}
+  tls.crt: '{{ $root.Files.Get $path | b64enc }}'
+  {{- end }}
+  {{- $root := . -}}
+  {{- range $path, $bytes := .Files.Glob "secrets/private.key" }}
+  tls.key: '{{ $root.Files.Get $path | b64enc }}'
+  {{- end }}
+  {{- else }}
+  tls.crt: {{ .Values.ingressResource.chainCRT }}
+  tls.key: {{ .Values.ingressResource.privateKey }}
+  {{- end }}
 kind: Secret
 metadata:
   name: {{ .Values.name }}-cert
