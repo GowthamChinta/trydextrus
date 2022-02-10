@@ -124,7 +124,7 @@ ingressResource:
 
 
   # These parameters are still under testing
-  createSecret: "no" #Only Enter "yes" if you want to create a secret as a part of dextrus-helm chart. 
+  createSecret: "yes" #Only Enter "yes" if you want to create a secret as a part of dextrus-helm chart. 
   throughFile: "no" #save cachain.crt and private.key in secrets folder under helm chart
   
   #steps to create cachainCRT 
