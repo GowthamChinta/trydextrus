@@ -1,19 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.name }}-dextrusprod-deploy
+  name: dextrusprod-deploy
   labels:
-    app: {{ .Values.name }}-dextrusprod
+    app: dextrusprod
+    netpol: kafka-communication
   namespace: {{ .Values.namespace | default "default" }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Values.name }}-dextrusprod
+      app: dextrusprod
+      netpol: kafka-communication
   template:
     metadata:
       labels:
-        app: {{ .Values.name }}-dextrusprod
+        app: dextrusprod
+        netpol: kafka-communication
     spec:
       volumes:
         - name: efs-pvc
@@ -29,10 +32,10 @@ spec:
             - configMap:
                 name: application-cm
             - configMap:
-                name: {{ .Values.name }}-dextrusprod-appdev-cm             
+                name: dextrusprod-appdev-cm             
       containers:
-      - name: {{ .Values.name }}-dextrusprod
-        image: 157557265942.dkr.ecr.ap-south-1.amazonaws.com/dextrusprod:cluster-0.3
+      - name: dextrusprod
+        image: {{ .Values.image.dextrusprodImage }}
         imagePullPolicy: Always
         ports:
           - containerPort: 8086

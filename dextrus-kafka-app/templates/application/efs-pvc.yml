@@ -4,7 +4,7 @@ metadata:
   namespace: {{ .Values.namespace | default "default" }}
   name: efs
   annotations:
-    volume.beta.kubernetes.io/storage-class: "{{ .Values.name }}-aws-efs"
+    volume.beta.kubernetes.io/storage-class: "{{ .Values.namespace }}-aws-efs"
 spec:
   accessModes:
     - ReadWriteMany

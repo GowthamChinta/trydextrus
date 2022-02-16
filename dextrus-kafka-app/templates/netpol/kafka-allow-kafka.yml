@@ -1,0 +1,26 @@
+{{- if eq ( .Values.enableNetworkPolicy | toString ) "yes" }}
+{{- if eq ( .Values.enableKafka | toString) "yes" }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: kafka-app-internal-netpol
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  podSelector: 
+    matchLabels:
+      netpol: kafka
+  policyTypes:
+  - Egress
+  - Ingress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          netpol: kafka
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          netpol: kafka
+{{- end }}
+{{- end }}

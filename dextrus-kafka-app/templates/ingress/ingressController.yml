@@ -1,4 +1,4 @@
-{{- if eq .Values.installIngress "yes" }}
+{{- if eq (.Values.installIngress | toString) "yes" }}
 apiVersion: v1
 kind: Namespace
 metadata:

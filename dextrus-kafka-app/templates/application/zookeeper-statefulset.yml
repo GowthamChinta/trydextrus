@@ -101,7 +101,7 @@ spec:
 #                - "/bin/bash"
 #                - "-c"
 #                - echo stat | nc 0.0.0.0 2181 | grep -i "leader\|follower"
-          image: confluentinc/cp-zookeeper:5.5.0
+          image: {{ .Values.image.zookeeperImage }}
           name: zookeeper
           imagePullPolicy: Always
           volumeMounts:

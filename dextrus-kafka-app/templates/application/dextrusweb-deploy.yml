@@ -1,23 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.name }}-dextrusweb-deploy
+  name: dextrusweb-deploy
   labels:
-    app: {{ .Values.name }}-dextrusweb
+    app: dextrusweb
+    netpol: kafka-communication
   namespace: {{ .Values.namespace | default "default" }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ .Values.name }}-dextrusweb
+      app: dextrusweb
+      netpol: kafka-communication
   template:
     metadata:
       labels:
-        app: {{ .Values.name }}-dextrusweb
+        app: dextrusweb
+        netpol: kafka-communication
     spec:
       containers:
-        - name: {{ .Values.name }}-dextrusweb
-          image: 157557265942.dkr.ecr.ap-south-1.amazonaws.com/dextrusweb:cluster-0.3
+        - name: dextrusweb
+          image: {{ .Values.image.dextruswebImage }}
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
@@ -40,7 +43,7 @@ spec:
           projected:
             sources:
             - configMap:
-                name: {{ .Values.name }}-dextrusweb-appdev-cm
+                name: dextrusweb-appdev-cm
             - configMap:
                 name: application-cm
             - configMap:

@@ -7,13 +7,13 @@ metadata:
   namespace: {{ .Values.namespace | default "default" }}
   labels:
     app: zookeeper
-    #  annotations:
-    #    "helm.sh/hook-weight": "1"
+    netpol: kafka
 
 spec:
   minAvailable: 2
   selector:
     matchLabels:
       app: zookeeper
+      netpol: kafka
 {{- else }}
 {{- end }}

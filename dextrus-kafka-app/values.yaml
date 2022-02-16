@@ -6,6 +6,25 @@
 name: "test"
 namespace: "test"
 
+image:
+  # Location fo Dextrus applicaton images.
+  dextrusuiImage: "157557265942.dkr.ecr.ap-south-1.amazonaws.com/dextrusui:cluster-0.1"
+  dextrusprodImage: "157557265942.dkr.ecr.ap-south-1.amazonaws.com/dextrusprod:cluster-0.1"
+  dbexplorerImage: "157557265942.dkr.ecr.ap-south-1.amazonaws.com/dbexplorer:cluster-0.1"
+  dextruswebImage: "157557265942.dkr.ecr.ap-south-1.amazonaws.com/dextrusweb:cluster-0.1"
+  twitterImage: "157557265942.dkr.ecr.ap-south-1.amazonaws.com/twitter:cluster-0.1"
+  wranglerImage: "157557265942.dkr.ecr.ap-south-1.amazonaws.com/wrangler:cluster-0.1"
+  systemvariablesImage: "157557265942.dkr.ecr.ap-south-1.amazonaws.com/systemvariables:cluster-0.1"
+  streamingImage: "157557265942.dkr.ecr.ap-south-1.amazonaws.com/streaming:cluster-0.1"
+
+  # Location for Kafka application images
+  kafkaImage: "confluentinc/cp-kafka:5.5.0"
+  connectImage: "confluentinc/cp-kafka-connect:5.5.0"
+  restImage: "confluentinc/cp-kafka-rest:5.5.0"
+  schemaregistryImage: "confluentinc/cp-schema-registry:5.5.0"
+  zookeeperImage: "confluentinc/cp-zookeeper:5.5.0"
+
+
 s3:
   bucket_name: "dextrus-test28092021"
   access_key: ""
@@ -74,9 +93,12 @@ twitter:
     type: ""
 
 
-############################################################
+##############################################################
+###                      KAFKA APPLICATION                 ###
+##############################################################
 
-installKafka: "no"
+
+installKafka: "yes" # Change this parameter to "yes" if you want kafka application also to be install with dextrus
 
 zookeeper:
   datadir:
@@ -96,14 +118,15 @@ kafka:
 # Fill below details for new ingress controller that will be created only for dextrus application
 #
 installIngress: "no" # if 'yes' a new ingress will be created
-
-ingressController:
-  namespace: "dextrus-ingress" #namespace where all ingress services, controllers and deployments will be part of.
-  ingressClass: "dextrus-ingress" #Ingress class used by the ingress controller deployed with this application
-  image: "k8s.gcr.io/ingress-nginx/controller:v1.1.0@sha256:f766669fdcf3dc26347ed273a55e754b427eb4411ee075a53f30718b4499076a"
-
-##############################################################
 #
+#ingressController:
+#  namespace: "dextrus-ingress" #namespace where all ingress services, controllers and deployments will be part of.
+#  ingressClass: "dextrus-ingress" #Ingress class used by the ingress controller deployed with this application
+#  image: "k8s.gcr.io/ingress-nginx/controller:v1.1.0@sha256:f766669fdcf3dc26347ed273a55e754b427eb4411ee075a53f30718b4499076a"
+#
+##############################################################
+###              Ingress Resource                          ###
+##############################################################
 
 installIngressResource: "yes"  
 
@@ -120,10 +143,6 @@ ingressResource:
   secretName: "dextrus-cert" #ssl certs received from public/private domain. needs to be used as a form of secret. secret should contain cert chain(cachain.cer) & private key (private.key)
 
 
-
-
-
-  # These parameters are still under testing
   createSecret: "no" #Only Enter "yes" if you want to create a secret as a part of dextrus-helm chart. 
   throughFile: "no" #save cachain.crt and private.key in secrets folder under helm chart
   
@@ -140,4 +159,130 @@ ingressResource:
   # cat private.key | base64 ------------- provide the output to privateKey below
   privateKey: "" #provide Base64 encoded certificate of the domain
 
-   
+##############################################################  
+###              Network Policies                          ###
+##############################################################
+
+
+# Change the parameter to "yes if network policy is required in the environment for dextrus app
+enableNetworkPolicy: "no"
+
+# provide the port details from application to application through which port
+networkPolicies:
+  dextrusui:    # sample this is for dextrusui application to dextrusweb application Egress 
+    dextrusweb: # Ingress rules are created for dextrusweb from dextrusui
+      port: 8080
+    dextrusprod:
+      port: 8086
+    dbexplorer:
+      port: 8081
+    streaming:
+      port: 8081
+    pythonservice:   
+      port: 8080
+    sysvar:
+      port: 8080
+    twitter:
+      port: 8088
+    monitorservice:
+      port: 8089
+    dataset:
+      port: 8080
+    aiml:
+      port: 8080
+    pythonaiml:
+      port: 8080
+  dextrusweb:
+    sysvar:
+      port: 8080
+    connect:  
+      port: 8083
+    rest:
+      port: 8082
+    kafka:
+      port: 9092
+    zookeeper:
+      port: 2181
+    schemareg:
+      port: 8081
+  dextrusprod:
+    connect:
+      port: 8083
+    rest: 
+      port: 8082
+    kafka:
+      port: 9092
+    zookeeper:
+      port: 2181
+    schemareg:
+      port: 8081
+  kafka:
+    dextrusweb:
+      port: 8080
+    dextrusprod:
+      port: 8086
+    streaming:
+      port: 8081
+  aiml:
+    sysvar:
+      port: 8080
+    dataset:
+      port: 8080
+  pythonaiml:
+    aiml:
+      port: 8080
+  dataset:
+    sysvar:
+      port: 8080
+    aiml:
+      port: 8080
+  kafka:
+    dextrusweb:
+      port: 8080
+    dextrusprod:
+      port: 8086
+    streaming:
+      port: 8081
+  pythonservice:
+    wrangler:
+      port: 8085
+  streaming:
+    sysvar:
+      port: 8080
+    twitter:
+      port: 8088
+    connect:
+      port: 8083
+    rest: 
+      port: 8082
+    kafka:
+      port: 9092
+    zookeeper:
+      port: 2181
+    schemareg:
+      port: 8081
+  twitter:
+    streaming:
+      port: 8081
+  wrangler:    
+    dextrusweb: 
+      port: 8080
+    pythonservice:
+      port: 8080
+    sysvar:
+      port: 8080
+    dataset:
+      port: 8080
+
+
+
+sparkexecutorNetPol: # Network policy which has egress communication to below applications. 
+  dbexplorer:
+    enable: true # if it is true, application has ingress communication from spark executor
+  wrangler:
+    enable: true
+  dextrusweb:
+    enable: true
+  streaming:
+    enable: true
+

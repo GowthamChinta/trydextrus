@@ -1,6 +1,6 @@
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: {{ .Values.name }}-aws-efs
+  name: {{ .Values.namespace }}-aws-efs
   namespace: {{ .Values.namespace | default "default" }}
-provisioner: {{ .Values.name }}-efs-provisioner-name
+provisioner: efs-provisioner-name

@@ -6,19 +6,18 @@ metadata:
   namespace: {{ .Values.namespace | default "default" }}
   labels:
     app: connect
-    #  annotations:
-    #    "helm.sh/hook": "pre-install"
-    #    "helm.sh/hook-weight": "100"
-    
+    netpol: kafka 
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: connect
+      netpol: kafka
   template:
     metadata:
       labels:
         app: connect
+        netpol: kafka
     spec:
       affinity:
         nodeAffinity:
@@ -43,7 +42,7 @@ spec:
           image: busybox:1.28
           command: ['sh', '-c', "until nslookup kafka-3.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]      
       containers:
-        - image: confluentinc/cp-kafka-connect:5.5.0
+        - image: {{ .Values.image.connectImage }}
           name: connect
           imagePullPolicy: IfNotPresent
           ports:

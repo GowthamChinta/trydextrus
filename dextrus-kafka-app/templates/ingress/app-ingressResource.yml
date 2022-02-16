@@ -26,7 +26,7 @@ spec:
       {{- if .Values.ingressResource.existingSecretName }}
       secretName: {{ .Values.ingressResource.existingSecretName }}
       {{- else if eq (.Values.ingressResource.createSecret | toString) "yes" }}
-      secretName: {{ .Values.name }}-cert
+      secretName: {{ .Values.namespace }}-cert
       {{- else }}      
       {{- end }}
   {{- end }}        
@@ -36,35 +36,35 @@ spec:
        paths:      
        - backend:
            service:
-             name: {{ .Values.name }}-dbexplorer-svc
+             name: dbexplorer-svc
              port:
                number: 80
          path: /dbexplorer(/|$)(.*)
          pathType: Prefix
        - backend:
            service:
-             name: {{ .Values.name }}-sysvar-svc
+             name: sysvar-svc
              port:
                number: 80
          path: /system(/|$)(.*)
          pathType: Prefix
        - backend:
            service:
-             name: {{ .Values.name }}-dextrusweb-svc
+             name: dextrusweb-svc
              port:
                number: 80
          path: /dweb(/|$)(.*)
          pathType: Prefix
        - backend:
            service:
-             name: {{ .Values.name }}streaming-svc
+             name: streaming-svc
              port:
                number: 80
          path: /streaming(/|$)(.*)
          pathType: Prefix
        - backend:
            service:
-             name: {{ .Values.name }}-dextrusprod-svc
+             name: dextrusprod-svc
              port:
                number: 80
          path: /dprod(/|$)(.*)

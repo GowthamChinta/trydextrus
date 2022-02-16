@@ -1,0 +1,15 @@
+Application has been installed. 
+{{- if .Values.ingressResource.domainName }}
+Your application is be accessible via.
+{{- if eq (.Values.ingressResource.sslEnabled| toString) "yes" }}
+	https://{{ .Values.ingressResource.domainName }}
+{{- else }}
+	http://{{ .Values.ingressResource.domainName }}
+{{- end }}
+{{- else }}
+	http://$(kubectl get ingress ui-ingress-resource --namespace {{ .Values.namespace }} -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
+{{- end }}
+
+Your AWS credentials.
+	ACCESS KEY: {{ .Values.s3.access_key }}
+	SECRET KEY: {{ .Values.s3.secret_key }}

@@ -27,7 +27,7 @@ spec:
       {{- if .Values.ingressResource.existingSecretName }}  
       secretName: {{ .Values.ingressResource.existingSecretName }}
       {{- else if eq (.Values.ingressResource.createSecret | toString) "yes" }}
-      secretName: {{ .Values.name }}-cert
+      secretName: {{ .Values.namespace }}-cert
       {{- else }}
       {{- end }}
   {{- end }}
@@ -37,7 +37,7 @@ spec:
       paths:
       - backend:
           service:
-            name: {{ .Values.name }}-dextrusui-svc
+            name: dextrusui-svc
             port:
               number: 80
         path: /

@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: wrangler-svc
+  namespace: {{ .Values.namespace | default "default" }}
+  
+spec:
+  type: {{ .Values.wrangler.service.type | default "ClusterIP" }}
+  selector:
+    app: wrangler
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8081
+

@@ -6,10 +6,7 @@ metadata:
   namespace: {{ .Values.namespace | default "default" }}
   labels:
     app: kafka
-    #  annotations:kafka-statefulSet.yml
-    #    "helm.sh/hook": "pre-install"
-    #    "helm.sh/hook-weight": "2"
-    
+    netpol: kafka 
 spec:
   podManagementPolicy: OrderedReady
   replicas: 4
@@ -17,12 +14,14 @@ spec:
   selector:
     matchLabels:
       app: kafka
+      netpol: kafka
   updateStrategy:
     type: RollingUpdate
   template:
     metadata:
       labels:
         app: kafka
+        netpol: kafka
     spec:
       affinity:
         podAntiAffinity:
@@ -97,7 +96,7 @@ spec:
           ports:
             - containerPort: 9092
               name: broker
-          image: confluentinc/cp-kafka:5.5.0
+          image: {{ .Values.image.kafkaImage }}
           imagePullPolicy: Always
           volumeMounts:
             - name: datadir

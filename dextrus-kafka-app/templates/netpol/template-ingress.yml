@@ -1,0 +1,24 @@
+{{- if eq ( .Values.enableNetworkPolicy | toString ) "yes" }}
+{{- range $key, $val := .Values.networkPolicies }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ $val }}-allow-ingress-{{ $key }}
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  podSelector:
+    matchLabels:
+      app: {{ $val }}
+  policyTypes:
+  - Egress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: {{ $key }}
+    ports:
+    - protocol: TCP
+      port: {{ $val.port | quote }}
+
+{{- end }}
+{{- end }}

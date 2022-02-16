@@ -1,0 +1,20 @@
+---
+{{- if eq .Values.installKafka "yes" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: kafka-jmx-svc
+  namespace: {{ .Values.namespace | default "default" }}
+  labels:
+    app: kafka
+    netpol: kafka 
+spec:
+  ports:
+    - port: 39999
+      name: jmx
+  type: ClusterIP
+  selector:
+    app: kafka
+
+{{- else }}
+{{- end }}

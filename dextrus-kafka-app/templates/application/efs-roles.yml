@@ -1,7 +1,7 @@
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: leader-locking-{{ .Values.name }}-efs-provisioner
+  name: leader-locking-efs-provisioner
   namespace: {{ .Values.namespace | default "default" }}
 rules:
   - apiGroups: [""]
@@ -11,21 +11,21 @@ rules:
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: leader-locking-{{ .Values.name }}-efs-provisioner
+  name: leader-locking-efs-provisioner
   namespace: {{ .Values.namespace | default "default" }}
 subjects:
   - kind: ServiceAccount
-    name: {{ .Values.name }}-efs-provisioner
+    name: efs-provisioner
     namespace: {{ .Values.namespace | default "default" }}
 roleRef:
   kind: Role
-  name: leader-locking-{{ .Values.name }}-efs-provisioner
+  name: leader-locking-efs-provisioner
   apiGroup: rbac.authorization.k8s.io
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Values.name }}-efs-provisioner-runner
+  name: {{ .Values.namespace }}-efs-provisioner-runner
   namespace: {{ .Values.namespace | default "default" }}
 rules:
   - apiGroups: [""]
@@ -47,13 +47,13 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Values.name }}-run-efs-provisioner
+  name: {{ .Values.namespace }}-run-efs-provisioner
   namespace: {{ .Values.namespace | default "default" }}
 subjects:
   - kind: ServiceAccount
-    name: {{ .Values.name }}-efs-provisioner
+    name: efs-provisioner
     namespace: {{ .Values.namespace | default "default" }}
 roleRef:
   kind: ClusterRole
-  name: {{ .Values.name }}-efs-provisioner-runner
+  name: {{ .Values.namespace }}-efs-provisioner-runner
   apiGroup: rbac.authorization.k8s.io

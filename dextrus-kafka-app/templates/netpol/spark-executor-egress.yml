@@ -1,0 +1,22 @@
+{{- if eq ( .Values.enableNetworkPolicy | toString ) "yes" }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sparkexecutor-allow-egress
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  podSelector:
+    matchLabels:
+      spark-role: executor #Need clarity from where this label is getting assigned to dextrus pods. 
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    {{- range $key, $val := .Values.sparkexecutorNetPol }}
+    {{- if  $val.enable }}
+    - podSelector:
+        matchLabels:
+          app: {{ $val }} 
+    {{- end }}
+    {{- end }}
+{{- end }}

@@ -1,0 +1,14 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name:  streaming-svc
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  type: {{ .Values.streaming.service.type | default "ClusterIP" }}
+  selector:
+    app: streaming
+    netpol: kafka-communication
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8081

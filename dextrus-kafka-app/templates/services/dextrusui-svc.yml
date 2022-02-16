@@ -1,0 +1,13 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: dextrusui-svc
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  type: {{ .Values.dextrusui.service.type | default "ClusterIP" }}
+  selector:
+    app: dextrusui
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 9090

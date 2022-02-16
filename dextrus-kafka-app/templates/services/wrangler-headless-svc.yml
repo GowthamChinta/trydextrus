@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wrangler-headless-svc
+  namespace: {{ .Values.namespace | default "default" }}
+
+spec:
+  selector:
+    app: wrangler
+  ports:
+    - protocol: TCP
+      port: 44103
+  clusterIP: None
+
