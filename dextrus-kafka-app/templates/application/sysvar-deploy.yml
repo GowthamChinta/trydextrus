@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: sysvar-deploy
+  name: systemvariables-deploy
   namespace: {{.Values.namespace | default "default" }}
   labels:
-    app: sysvar
+    app: systemvariables
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: sysvar
+      app: systemvariables
   template:
     metadata:
       labels:
-        app: sysvar
+        app: systemvariables
     spec:
       containers:
-      - name: sysvar
+      - name: systemvariables
         image: {{ .Values.image.systemvariablesImage }}
         imagePullPolicy: IfNotPresent
         ports:
@@ -31,7 +31,7 @@ spec:
           projected:
             sources:
             - configMap:
-                name: sysvar-appdev-cm
+                name: systemvariables-appdev-cm
             - configMap:
                 name: hive-site-cm
             - configMap:

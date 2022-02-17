@@ -2,21 +2,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: schemareg-deploy
+  name: schema-registry-deploy
   namespace: {{ .Values.namespace | default "default" }}
   labels:
-    app: schemareg
+    app: schema-registry
     netpol: kafka    
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: schemareg
+      app: schema-registry
       netpol: kafka
   template:
     metadata:
       labels:
-        app: schemareg
+        app: schema-registry
         netpol: kafka
     spec:
       affinity:
@@ -31,22 +31,22 @@ spec:
       initContainers:
         - name: init-kafka-0
           image: busybox:1.28
-          command: ['sh', '-c', "until nslookup kafka-0.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
+          command: ['sh', '-c', "until nslookup kafka-0.kafka-headless.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
         - name: init-kafka-1
           image: busybox:1.28
-          command: ['sh', '-c', "until nslookup kafka-1.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
+          command: ['sh', '-c', "until nslookup kafka-1.kafka-headless.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
         - name: init-kafka-2
           image: busybox:1.28
-          command: ['sh', '-c', "until nslookup kafka-2.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
+          command: ['sh', '-c', "until nslookup kafka-2.kafka-headless.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
         - name: init-kafka-3
           image: busybox:1.28
-          command: ['sh', '-c', "until nslookup kafka-3.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]                        
+          command: ['sh', '-c', "until nslookup kafka-3.kafka-headless.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]                        
       containers:
-        - name: schemareg
+        - name: schema-registry
           image: {{ .Values.image.schemaregistryImage }}
           imagePullPolicy: IfNotPresent
           ports:
-            - name: schemareg
+            - name: schema-registry
               containerPort: 8081
           resources: {}
           env:
@@ -59,7 +59,7 @@ spec:
             - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
               value: kafka-svc:9092
             - name: SCHEMA_REGISTRY_KAFKASTORE_GROUP_ID
-              value: schemareg
+              value: schema-registry
             - name: SCHEMA_REGISTRY_MASTER_ELIGIBILITY
               value: "true"
             - name: SCHEMA_REGISTRY_HEAP_OPTS

@@ -78,7 +78,7 @@ data:
         bucket: {{ .Values.s3.bucket_name }}
         endPoint: s3.{{ .Values.s3.region }}.amazonaws.com
       driver:
-        host: dextrusweb-headless-svc
+        host: dextrusweb-headless-service
         port: 44103
         memory: 1g
         memoryOverhead: 512

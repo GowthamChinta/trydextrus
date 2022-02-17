@@ -37,7 +37,7 @@ spec:
       paths:
       - backend:
           service:
-            name: dextrusui-svc
+            name: dextrusui-service
             port:
               number: 80
         path: /

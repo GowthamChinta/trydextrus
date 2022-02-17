@@ -17,7 +17,7 @@ spec:
   selector:
     matchLabels:
       app: zookeeper
-  serviceName: zookeeper-headless-svc
+  serviceName: zookeeper-headless
   template:
     metadata:
       name: zookeeper
@@ -62,10 +62,10 @@ spec:
               value: "24"
             {{- if .Values.namespace }}
             - name: ZOOKEEPER_SERVERS
-              value: "zookeeper-0.zookeeper-headless-svc.{{ .Values.namespace }}:2888:3888;zookeeper-1.zookeeper-headless-svc.{{ .Values.namespace }}:2888:3888;zookeeper-2.zookeeper-headless-svc.{{ .Values.namespace }}:2888:3888"
+              value: "zookeeper-0.zookeeper-headless.{{ .Values.namespace }}:2888:3888;zookeeper-1.zookeeper-headless.{{ .Values.namespace }}:2888:3888;zookeeper-2.zookeeper-headless.{{ .Values.namespace }}:2888:3888"
             {{- else }}
             - name: ZOOKEEPER_SERVERS
-              value: "zookeeper-0.zookeeper-headless-svc.default:2888:3888;zookeeper-1.zookeeper-headless-svc.default:2888:3888;zookeeper-2.zookeeper-headless-svc.default:2888:3888"
+              value: "zookeeper-0.zookeeper-headless.default:2888:3888;zookeeper-1.zookeeper-headless.default:2888:3888;zookeeper-2.zookeeper-headless.default:2888:3888"
             {{- end }}
             - name: KAFKA_JMX_PORT
               value: "39999"

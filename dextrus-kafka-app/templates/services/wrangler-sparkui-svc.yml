@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: wrangler-sparkui-svc
+  name: wrangler-sparkui-service
   namespace: {{ .Values.namespace | default "default" }}
 spec:
   type: {{ .Values.wrangler.spark_service.type | default "ClusterIP" }}

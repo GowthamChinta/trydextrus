@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: dextrusprod-svc
+  name: dextrusprod-service
   namespace: {{ .Values.namespace | default "default" }}
 spec:
   type: {{ .Values.dextrusprod.service.type | default "ClusterIP" }}

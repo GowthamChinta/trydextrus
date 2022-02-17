@@ -31,16 +31,16 @@ spec:
       initContainers:
         - name: init-kafka-0
           image: busybox:1.28
-          command: ['sh', '-c', "until nslookup kafka-0.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
+          command: ['sh', '-c', "until nslookup kafka-0.kafka-headless.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
         - name: init-kafka-1
           image: busybox:1.28
-          command: ['sh', '-c', "until nslookup kafka-1.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
+          command: ['sh', '-c', "until nslookup kafka-1.kafka-headless.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
         - name: init-kafka-2
           image: busybox:1.28
-          command: ['sh', '-c', "until nslookup kafka-2.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
+          command: ['sh', '-c', "until nslookup kafka-2.kafka-headless.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
         - name: init-kafka-3
           image: busybox:1.28
-          command: ['sh', '-c', "until nslookup kafka-3.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]                        
+          command: ['sh', '-c', "until nslookup kafka-3.kafka-headless.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]                        
       containers:
         - name: rest
           image: {{ .Values.image.restImage }}
@@ -56,7 +56,7 @@ spec:
             - name: KAFKA_REST_BOOTSTRAP_SERVERS
               value: "kafka-svc:9092"
             - name: KAFKA_REST_SCHEMA_REGISTRY_URL
-              value: "schema-registry-svc:8081"
+              value: "schema-registryistry-svc:8081"
             - name: KAFKAREST_HEAP_OPTS
               value: "-Xms600M -Xmx600M"
 

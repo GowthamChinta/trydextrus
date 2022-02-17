@@ -31,16 +31,16 @@ spec:
       initContainers:                  
         - name: init-kafka-0
           image: busybox:1.28
-          command: ['sh', '-c', "until nslookup kafka-0.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
+          command: ['sh', '-c', "until nslookup kafka-0.kafka-headless.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
         - name: init-kafka-1
           image: busybox:1.28
-          command: ['sh', '-c', "until nslookup kafka-1.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
+          command: ['sh', '-c', "until nslookup kafka-1.kafka-headless.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
         - name: init-kafka-2
           image: busybox:1.28
-          command: ['sh', '-c', "until nslookup kafka-2.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
+          command: ['sh', '-c', "until nslookup kafka-2.kafka-headless.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
         - name: init-kafka-3
           image: busybox:1.28
-          command: ['sh', '-c', "until nslookup kafka-3.kafka-headless-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]      
+          command: ['sh', '-c', "until nslookup kafka-3.kafka-headless.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]      
       containers:
         - image: {{ .Values.image.connectImage }}
           name: connect
@@ -68,9 +68,9 @@ spec:
             - name: CONNECT_VALUE_CONVERTER
               value: org.apache.kafka.connect.json.JsonConverter
             - name: CONNECT_KEY_CONVERTER_SCHEMA_REGISTRY_URL
-              value: schema-registry-svc:8082
+              value: schema-registryistry-svc:8082
             - name: CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL
-              value: schema-registry-svc:8082
+              value: schema-registryistry-svc:8082
             - name: CONNECT_PLUGIN.PATH
               value: "/usr/share/java,/usr/share/confluent-hub-components"
             - name: CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE

@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: dbexplorer-sparkui-svc
+  name: dbexplorer-sparkui-service
   namespace: {{ .Values.namespace | default "default" }}
 spec:
   type: {{ .Values.dbexplorer.spark_service.type | default "ClusterIP" }}

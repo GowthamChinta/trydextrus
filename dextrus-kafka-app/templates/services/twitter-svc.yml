@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: twitter-svc
+  name: twitter-service
   namespace: {{ .Values.namespace | default "default" }}
 spec:
   type: {{ .Values.twitter.service.type | default "ClusterIP" }}

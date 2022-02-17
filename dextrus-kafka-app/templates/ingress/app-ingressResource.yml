@@ -36,49 +36,49 @@ spec:
        paths:      
        - backend:
            service:
-             name: dbexplorer-svc
+             name: dbexplorer-service
              port:
                number: 80
          path: /dbexplorer(/|$)(.*)
          pathType: Prefix
        - backend:
            service:
-             name: sysvar-svc
+             name: systemvariables-service
              port:
                number: 80
          path: /system(/|$)(.*)
          pathType: Prefix
        - backend:
            service:
-             name: dextrusweb-svc
+             name: dextrusweb-service
              port:
                number: 80
          path: /dweb(/|$)(.*)
          pathType: Prefix
        - backend:
            service:
-             name: streaming-svc
+             name: streaming-service
              port:
                number: 80
          path: /streaming(/|$)(.*)
          pathType: Prefix
        - backend:
            service:
-             name: dextrusprod-svc
+             name: dextrusprod-service
              port:
                number: 80
          path: /dprod(/|$)(.*)
          pathType: Prefix        
        - backend:
            service:
-             name: twitter-svc
+             name: twitter-service
              port:
                number: 80
          path: /twitter(/|$)(.*)
          pathType: Prefix
        - backend:
            service:
-             name: wrangler-svc
+             name: wrangler-service
              port:
                number: 80
          path: /wrangler(/|$)(.*)

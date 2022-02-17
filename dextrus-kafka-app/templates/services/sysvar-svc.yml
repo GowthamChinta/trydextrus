@@ -1,12 +1,12 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: sysvar-svc
+  name: systemvariables-service
   namespace: {{ .Values.namespace | default "default" }}
 spec:
   type: {{ .Values.systemVariable.service.type | default "ClusterIP" }}
   selector:
-    app: sysvar
+    app: systemvariables
   ports:
   - protocol: TCP
     port: 80

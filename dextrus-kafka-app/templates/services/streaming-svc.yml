@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name:  streaming-svc
+  name:  streaming-service
   namespace: {{ .Values.namespace | default "default" }}
 spec:
   type: {{ .Values.streaming.service.type | default "ClusterIP" }}

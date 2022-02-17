@@ -55,5 +55,5 @@ data:
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: sysvar-appdev-cm
+  name: systemvariables-appdev-cm
   namespace: {{ .Values.namespace | default "default" }}

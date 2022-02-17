@@ -28,5 +28,5 @@ data:
 kind: ConfigMap
 metadata:
   creationTimestamp: null
-  name: sysvar-cm
+  name: systemvariables-cm
   namespace: {{ .Values.namespace | default "default" }}
