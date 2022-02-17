@@ -1,24 +1,24 @@
-{{- if eq ( .Values.enableNetworkPolicy | toString ) "yes" }}
-{{- range $key, $val := .Values.networkPolicies }}
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: {{ $key }}-allow-egress-{{ $val }}
-  namespace: {{ .Values.namespace | default "default" }}
-spec:
-  podSelector:
-    matchLabels:
-      app: {{ $key }}
-  policyTypes:
-  - Egress
-  egress:
-  - to:
-    - podSelector:
-        matchLabels:
-          app: {{ $val }}
-    ports:
-    - protocol: TCP
-      port: {{ $val.port | quote }}
-
-{{- end }}
-{{- end }}
+#{{- if eq ( .Values.enableNetworkPolicy | toString ) "yes" }}
+#{{- range $key, $val := .Values.networkPolicies }}
+#apiVersion: networking.k8s.io/v1
+#kind: NetworkPolicy
+#metadata:
+#  name: {{ $key }}-allow-egress-{{ $val.app }}
+#  namespace: {{ $.Values.namespace | default "default" }}
+#spec:
+#  podSelector:
+#    matchLabels:
+#      app: {{ $key }}
+#  policyTypes:
+#  - Egress
+#  egress:
+#  - to:
+#    - podSelector:
+#        matchLabels:
+#          app: {{ $val.app }}
+#    ports:
+#    - protocol: TCP
+#      port: {{ $val.port | quote }}
+#
+#{{- end }}
+#{{- end }}

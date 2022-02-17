@@ -1,0 +1,19 @@
+{{- if eq ( .Values.enableNetworkPolicy | toString ) "yes" }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: sparkexecutor-allow-egress-dextrus
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  podSelector:
+    matchLabels:
+      spark-role: executor
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          netpol: kafka-communication
+          
+{{- end }}

@@ -1,0 +1,22 @@
+{{- if eq ( .Values.enableNetworkPolicy | toString ) "yes" }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: twitter-allow-ingress-streaming
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  podSelector:
+    matchLabels:
+      app: twitter
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: streaming
+    ports:
+    - protocol: TCP
+      port: 8088
+  policyTypes:
+  - Ingress
+{{- end }}
+

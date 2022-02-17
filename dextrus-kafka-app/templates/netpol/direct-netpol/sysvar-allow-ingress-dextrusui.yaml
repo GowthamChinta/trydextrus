@@ -1,0 +1,21 @@
+{{- if eq ( .Values.enableNetworkPolicy | toString ) "yes" }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: systemvariables-allow-ingress-dextrusui
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  podSelector:
+    matchLabels:
+      app: systemvariables
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: dextrusui
+    ports:
+    - protocol: TCP
+      port: 8080
+  policyTypes:
+  - Ingress
+{{- end }}    

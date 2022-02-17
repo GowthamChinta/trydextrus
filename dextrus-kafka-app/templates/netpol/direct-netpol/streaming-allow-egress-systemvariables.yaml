@@ -1,0 +1,21 @@
+{{- if eq ( .Values.enableNetworkPolicy | toString ) "yes" }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: streaming-allow-egress-systemvariables
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  podSelector:
+    matchLabels:
+      app: streaming
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - podSelector:
+        matchLabels:
+          app: systemvariables
+    ports:
+    - protocol: TCP
+      port: 8080
+{{- end }}      

@@ -1,0 +1,21 @@
+{{- if eq ( .Values.enableNetworkPolicy | toString ) "yes" }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: zookeeper-allow-ingress-dextrusweb
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  podSelector:
+    matchLabels:
+      app: zookeeper
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: dextrusweb
+    ports:
+    - protocol: TCP
+      port: 2181
+  policyTypes:
+  - Ingress
+{{- end }}    

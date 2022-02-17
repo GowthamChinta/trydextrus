@@ -1,0 +1,22 @@
+{{- if eq ( .Values.enableNetworkPolicy | toString ) "yes" }}
+apiVersion: networking.k8s.io/v1
+
+kind: NetworkPolicy
+metadata:
+  name: schema-registryistry-allow-ingress-dextrusprod
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  podSelector:
+    matchLabels:
+      app: schema-registryistry
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: dextrusprod
+    ports:
+    - protocol: TCP
+      port: 8081
+  policyTypes:
+  - Ingress
+{{- end }}    
