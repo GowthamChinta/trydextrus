@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dextrusui-deploy
+  namespace: {{ .Values.namespace | default "ClusterIP" }}
+  labels:
+    app: dextrusui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dextrusui
+  template:
+    metadata:
+      labels:
+        app: dextrusui
+    spec:
+      containers:
+      - name: dextrusui
+        image: {{ .Values.image.dextrusuiImage }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9090

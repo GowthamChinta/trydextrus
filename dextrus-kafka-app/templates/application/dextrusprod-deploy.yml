@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dextrusprod-deploy
+  labels:
+    app: dextrusprod
+    netpol: kafka-communication
+  namespace: {{ .Values.namespace | default "default" }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dextrusprod
+      netpol: kafka-communication
+  template:
+    metadata:
+      labels:
+        app: dextrusprod
+        netpol: kafka-communication
+    spec:
+      volumes:
+        - name: efs-pvc
+          persistentVolumeClaim:
+            claimName: efs
+        - name: dextrus-config-maps
+          projected:
+            sources:
+            - configMap:
+                name: hive-site-cm
+            - configMap:
+                name: metastore-site-cm
+            - configMap:
+                name: application-cm
+            - configMap:
+                name: dextrusprod-appdev-cm             
+      containers:
+      - name: dextrusprod
+        image: {{ .Values.image.dextrusprodImage }}
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8086
+        volumeMounts:
+          - name: efs-pvc
+            mountPath: "/home/ubuntu"
+          - name: dextrus-config-maps
+            mountPath: "/home/dextrusprod/resources"
+            readOnly: true
+

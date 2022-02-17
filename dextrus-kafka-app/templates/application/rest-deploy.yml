@@ -1,0 +1,65 @@
+{{- if eq .Values.installKafka "yes" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rest-deploy
+  namespace: {{ .Values.namespace | default "default" }}
+  labels:
+    app: rest
+    netpol: kafka 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: rest
+      netpol: kafka
+  template:
+    metadata:
+      labels:
+        app: rest
+        netpol: kafka
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: eks.amazonaws.com/nodegroup
+                    operator: In
+                    values:
+                      - kafka
+      initContainers:
+        - name: init-kafka-0
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup kafka-0.kafka-headless.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
+        - name: init-kafka-1
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup kafka-1.kafka-headless.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
+        - name: init-kafka-2
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup kafka-2.kafka-headless.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]
+        - name: init-kafka-3
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup kafka-3.kafka-headless.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for Kafka; sleep 2; done"]                        
+      containers:
+        - name: rest
+          image: {{ .Values.image.restImage }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: rest-proxy
+              containerPort: 8082
+          env:
+            - name: KAFKA_REST_HOST_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: KAFKA_REST_BOOTSTRAP_SERVERS
+              value: "kafka-svc:9092"
+            - name: KAFKA_REST_SCHEMA_REGISTRY_URL
+              value: "schema-registryistry-svc:8081"
+            - name: KAFKAREST_HEAP_OPTS
+              value: "-Xms600M -Xmx600M"
+
+
+{{- else }}
+{{- end }}
