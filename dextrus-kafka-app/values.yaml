@@ -169,109 +169,107 @@ enableNetworkPolicy: "no"
 
 # provide the port details from application to application through which port
 networkPolicies:
-  dextrusui:    # sample this is for dextrusui application to dextrusweb application Egress 
-    dextrusweb: # Ingress rules are created for dextrusweb from dextrusui
+  dextrusui:
+    app1:      # sample this is for dextrusui application to dextrusweb application Egress 
+      app: dextrusweb # Ingress rules are created for dextrusweb from dextrusui
       port: 8080
-    dextrusprod:
+    app2:
+      app: dextrusprod
       port: 8086
-    dbexplorer:
+    app3:
+      app: dbexplorer
       port: 8081
-    streaming:
+    app4:
+      app: streaming
       port: 8081
-    pythonservice:   
+    app5:
+      app: pythonservice
       port: 8080
-    sysvar:
+    app6:
+      app: sysvar
       port: 8080
-    twitter:
+    app7:
+      app: twitter
       port: 8088
-    monitorservice:
-      port: 8089
-    dataset:
-      port: 8080
-    aiml:
-      port: 8080
-    pythonaiml:
+    app8:
+      app: monitorservice
+      port: 8088
+    app9:
+      app: dataset
       port: 8080
   dextrusweb:
-    sysvar:
+    app1:
+      app: sysvar
       port: 8080
-    connect:  
+    app2:
+      app: connect
       port: 8083
-    rest:
+    app3:
+      app: rest
       port: 8082
-    kafka:
+    app4:
+      app: kafka
       port: 9092
-    zookeeper:
+    app5: 
+      app: zookeeper
       port: 2181
-    schemareg:
+    app6: 
+      app: schemareg
       port: 8081
   dextrusprod:
-    connect:
+    app1:
+      app: connect
       port: 8083
-    rest: 
+    app2:
+      app: rest
       port: 8082
-    kafka:
+    app3:
+      app: kafka
       port: 9092
-    zookeeper:
+    app4:
+      app: zookeeper
       port: 2181
-    schemareg:
+    app5:
+      app: schemareg
       port: 8081
-  kafka:
-    dextrusweb:
-      port: 8080
-    dextrusprod:
-      port: 8086
-    streaming:
-      port: 8081
-  aiml:
-    sysvar:
-      port: 8080
-    dataset:
-      port: 8080
-  pythonaiml:
-    aiml:
-      port: 8080
-  dataset:
-    sysvar:
-      port: 8080
-    aiml:
-      port: 8080
-  kafka:
-    dextrusweb:
-      port: 8080
-    dextrusprod:
-      port: 8086
-    streaming:
-      port: 8081
-  pythonservice:
-    wrangler:
-      port: 8085
   streaming:
-    sysvar:
+    app1:
+      app: sysvar
       port: 8080
-    twitter:
+    app2:
+      app: twitter
       port: 8088
-    connect:
+    app3:
+      app: connect
       port: 8083
-    rest: 
+    app4:
+      app: rest
       port: 8082
-    kafka:
+    app5:
+      app: kafka
       port: 9092
-    zookeeper:
+    app6:
+      app: zookeeper
       port: 2181
-    schemareg:
+    app7:
+      app: schemareg
       port: 8081
   twitter:
-    streaming:
+    app1:
+      app: streaming
       port: 8081
   wrangler:    
-    dextrusweb: 
+    app1:
+      app: dextrusweb
       port: 8080
-    pythonservice:
+    app2:
+      app: pythonservice
       port: 8080
-    sysvar:
+    app3:
+      app: sysvar
       port: 8080
-    dataset:
+    app4:
+      app: dataset
       port: 8080
 
 
