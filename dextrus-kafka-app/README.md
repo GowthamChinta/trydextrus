@@ -1,0 +1,285 @@
+# Default values for dextrus-application.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+name: "test"
+namespace: "test"
+
+image:
+  # Location fo Dextrus applicaton images.
+  dextrusuiImage: "157557265942.dkr.ecr.ap-south-1.amazonaws.com/dextrusui:cluster-0.1"
+  dextrusprodImage: "157557265942.dkr.ecr.ap-south-1.amazonaws.com/dextrusprod:cluster-0.1"
+  dbexplorerImage: "157557265942.dkr.ecr.ap-south-1.amazonaws.com/dbexplorer:cluster-0.1"
+  dextruswebImage: "157557265942.dkr.ecr.ap-south-1.amazonaws.com/dextrusweb:cluster-0.1"
+  twitterImage: "157557265942.dkr.ecr.ap-south-1.amazonaws.com/twitter:cluster-0.1"
+  wranglerImage: "157557265942.dkr.ecr.ap-south-1.amazonaws.com/wrangler:cluster-0.1"
+  systemvariablesImage: "157557265942.dkr.ecr.ap-south-1.amazonaws.com/systemvariables:cluster-0.1"
+  streamingImage: "157557265942.dkr.ecr.ap-south-1.amazonaws.com/streaming:cluster-0.1"
+
+  # Location for Kafka application images
+  kafkaImage: "confluentinc/cp-kafka:5.5.0"
+  connectImage: "confluentinc/cp-kafka-connect:5.5.0"
+  restImage: "confluentinc/cp-kafka-rest:5.5.0"
+  schemaregistryImage: "confluentinc/cp-schema-registry:5.5.0"
+  zookeeperImage: "confluentinc/cp-zookeeper:5.5.0"
+
+
+s3:
+  bucket_name: "dextrus-test28092021"
+  access_key: ""
+  secret_key: ""
+  region: "ap-south-1"
+
+rds_end_point: "terraform-20210928143533128300000001.ciwmij2ca5ul.ap-south-1.rds.amazonaws.com"
+deploymentMode: "s3Cluster"
+
+kubernetes:
+  master: "https://21E8134B7861EB39271BAA762E942EA6.yl4.ap-south-1.eks.amazonaws.com"
+
+
+efs:
+  fileSystemID: "fs-0efa8a157be49c182"
+  region: "ap-south-1"
+  dnsName: ""
+  nfs:
+    server: "fs-0efa8a157be49c182.efs.ap-south-1.amazonaws.com"
+
+dextrusui:
+  service:
+    type: ""
+
+dextrusprod:
+  service:
+    type: ""
+
+
+dextrusweb:
+  spark_service:
+    type: ""
+  service:
+    type: ""
+  data:
+    applicationDev:
+      frontendUrl: "http://54.193.227.29:9090"
+      logi:
+        baseUrl: "http://3.127.245.90:8080"
+        username: "supervisor"
+        password: "Dextrus!123"
+
+
+dbexplorer:
+  service:
+    type: ""
+  spark_service:
+    type: ""
+
+wrangler:
+  service:
+    type: ""
+  spark_service:
+    type: ""
+
+streaming:
+  service:
+    type: ""
+
+systemVariable:
+  service:
+    type: ""
+
+twitter:
+  service:
+    type: ""
+
+
+##############################################################
+###                      KAFKA APPLICATION                 ###
+##############################################################
+
+
+installKafka: "yes" # Change this parameter to "yes" if you want kafka application also to be install with dextrus
+
+zookeeper:
+  datadir:
+    resources:
+      storageSize: 5Gi
+  datalogdir:
+    resources:
+      storageSize: 5Gi
+
+kafka:
+  resources:
+    storageSize: 100Gi
+
+
+##########################################################
+#
+# Fill below details for new ingress controller that will be created only for dextrus application
+#
+installIngress: "no" # if 'yes' a new ingress will be created
+#
+#ingressController:
+#  namespace: "dextrus-ingress" #namespace where all ingress services, controllers and deployments will be part of.
+#  ingressClass: "dextrus-ingress" #Ingress class used by the ingress controller deployed with this application
+#  image: "k8s.gcr.io/ingress-nginx/controller:v1.1.0@sha256:f766669fdcf3dc26347ed273a55e754b427eb4411ee075a53f30718b4499076a"
+#
+##############################################################
+###              Ingress Resource                          ###
+##############################################################
+
+installIngressResource: "yes"  
+
+ingressResource:
+  domainName: "trydextrus.com" #Domain name created for the application. Leave empty if DomainName is not used. It can be both public and private domain name.
+  sslEnabled: "yes" #Enter "yes" if ssl needs to be enabled. Leave empty if there is no domainName.
+
+
+  # if SSL Enabled is "yes", Make sure a secret is created with cachain.cer(certificate chain) and private key
+  # command to create a secret with certificates
+  # kubectl create secret tls <secretName> --cert=path/to/tls.cert --key=path/to/tls.key
+  # check "kubectl create secret tls --help" for more details
+  # This certificate should be available in same namespace the application will be deployed. If no namespace is provide above then it can be created in default namespace
+  secretName: "dextrus-cert" #ssl certs received from public/private domain. needs to be used as a form of secret. secret should contain cert chain(cachain.cer) & private key (private.key)
+
+
+  createSecret: "no" #Only Enter "yes" if you want to create a secret as a part of dextrus-helm chart. 
+  throughFile: "no" #save cachain.crt and private.key in secrets folder under helm chart
+  
+  #steps to create cachainCRT 
+  # ca.crt ---- is the provided cert for domain (assumption)
+  # root.crt ---- is the root cert (assumption)
+  # cat ca.crt > cachain.crt (cachain.crt is an empty file)
+  # cat root.crt >> cachain.crt (here cachain.crt should already contain ca.crt data)
+  # cat cachain.crt | base64 ----- provide the output to cachainCRT beow.
+  cachainCRT: "" #provide Base64 encoded certificate of the certificate chain ( This should include both cert file and root file provided by public domain))
+
+  # steps to create base64 privateKey
+  # private.key ----- is the provided private key from domain (assumption)
+  # cat private.key | base64 ------------- provide the output to privateKey below
+  privateKey: "" #provide Base64 encoded certificate of the domain
+
+##############################################################  
+###              Network Policies                          ###
+##############################################################
+
+
+# Change the parameter to "yes if network policy is required in the environment for dextrus app
+enableNetworkPolicy: "no"
+
+# provide the port details from application to application through which port
+networkPolicies:
+  dextrusui:
+    app1:      # sample this is for dextrusui application to dextrusweb application Egress 
+      app: dextrusweb # Ingress rules are created for dextrusweb from dextrusui
+      port: 8080
+    app2:
+      app: dextrusprod
+      port: 8086
+    app3:
+      app: dbexplorer
+      port: 8081
+    app4:
+      app: streaming
+      port: 8081
+    app5:
+      app: pythonservice
+      port: 8080
+    app6:
+      app: sysvar
+      port: 8080
+    app7:
+      app: twitter
+      port: 8088
+    app8:
+      app: monitorservice
+      port: 8088
+    app9:
+      app: dataset
+      port: 8080
+  dextrusweb:
+    app1:
+      app: sysvar
+      port: 8080
+    app2:
+      app: connect
+      port: 8083
+    app3:
+      app: rest
+      port: 8082
+    app4:
+      app: kafka
+      port: 9092
+    app5: 
+      app: zookeeper
+      port: 2181
+    app6: 
+      app: schemareg
+      port: 8081
+  dextrusprod:
+    app1:
+      app: connect
+      port: 8083
+    app2:
+      app: rest
+      port: 8082
+    app3:
+      app: kafka
+      port: 9092
+    app4:
+      app: zookeeper
+      port: 2181
+    app5:
+      app: schemareg
+      port: 8081
+  streaming:
+    app1:
+      app: sysvar
+      port: 8080
+    app2:
+      app: twitter
+      port: 8088
+    app3:
+      app: connect
+      port: 8083
+    app4:
+      app: rest
+      port: 8082
+    app5:
+      app: kafka
+      port: 9092
+    app6:
+      app: zookeeper
+      port: 2181
+    app7:
+      app: schemareg
+      port: 8081
+  twitter:
+    app1:
+      app: streaming
+      port: 8081
+  wrangler:    
+    app1:
+      app: dextrusweb
+      port: 8080
+    app2:
+      app: pythonservice
+      port: 8080
+    app3:
+      app: sysvar
+      port: 8080
+    app4:
+      app: dataset
+      port: 8080
+
+
+
+sparkexecutorNetPol: # Network policy which has egress communication to below applications. 
+  dbexplorer:
+    enable: true # if it is true, application has ingress communication from spark executor
+  wrangler:
+    enable: true
+  dextrusweb:
+    enable: true
+  streaming:
+    enable: true
